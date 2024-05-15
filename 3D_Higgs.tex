@@ -1,0 +1,169 @@
+\documentclass[]{scrartcl}
+
+\usepackage{mathtools,amssymb}
+\usepackage{amsmath}
+\usepackage{slashed}
+\usepackage{tensor}
+\usepackage{comment}
+\usepackage{braket}
+\usepackage[dvipsnames]{xcolor} %Allows to create different colors
+
+\usepackage{cite}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks,
+	citecolor=blue,
+	filecolor=black,
+	linkcolor=black,
+	urlcolor=black
+}
+\usepackage{url}
+
+\newcommand{\gm}{\gamma_\mu}
+\newcommand{\gf}{\gamma_5}
+\newcommand{\gs}{\gamma_*}
+\newcommand{\gu}[1]{\gamma^{#1}}
+\newcommand{\gd}[1]{\gamma_{#1}}
+\newcommand{\note}[1]{\textcolor{red}{#1}}
+\newcommand{\id}{\mathbb{I}}
+\newcommand{\tp}{\tilde{\phi}}
+%opening
+\title{Phase Diagram of 3D Higgs}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Some notes to collect aspects on the studies of 3D Higgs 
+\end{abstract}
+
+\section{Introduction}
+The role of gauge symmetries in particle physics and condensed matter is ubiquitous. The interplay between these and global symmetries is crucial to understand the different phases of theories with gauge degrees of freedom.  
+
+\section{Scalars}
+Phase transitions on 3D SU($2$) Higgs theory with quartic scalar interactions have been studied. In \cite{Bonati:2021rzx} a continuous phase transition have been observed where the gauge fields seem to play a role. This is a strong evidence that the gauge degrees of freedom are relevant and it lead to the conjecture that the associated field theory is the expected continuum one. Further numerical and analytical studies would be necessaries to support (or falsify) the conjecture. A summary of the simulations performed in \cite{Bonati:2021rzx}:
+\begin{itemize}
+	\item $N_f=20$, $\gamma=1,3$, $\nu=1,10$: The theory undergoes a first order phase transition. At $\gamma\rightarrow\infty$ it may became continuous and controlled by the matrix model FP. The results seem to depend weekly on $\nu$
+	\item $N_f=40$ and $\gamma=0$ and $v=\pm1$: Uninteresting, it leads to a strong first order transition and it corresponds to the integration of the gauge degrees of freedom. $\beta_c=1.2$
+	\item $N_f=40$, $\gamma=1$ and $\nu=1$: Main focus, a second order phase transition seems to be found, critical exponents were determined.
+	\item $N_f=40$, $\gamma=\infty$ and $\nu=1$: Continuous phase transition but this time the critical exponents reproduced the ungaged scalar theory which can have continuous phase transition for big enough $N_f$. This shows that the one found at $\gamma=1$ must correspond to another fixed point.
+\end{itemize}
+The large $N_f$ critical exponents for the continuum model have been determined, therefore a strong evidence would be to compute the large $N_f$ critical exponents in the lattice and compare. Some things to consider
+\begin{itemize}
+	\item We need to introduce the scalar interaction in the code.
+	\item Observables are already implemented
+	\item Test should be performed. Comparison with \cite{Bonati:2021rzx}? $N_f=2$ and $\gamma=0$ could be tested to focus on the $v$ parameter and fast simulations.
+	\item Which parameter space do we explore?
+\end{itemize}
+
+
+
+\subsection{Trick to convert to matrix}
+It is useful to rewrite the Higgs $\{ \phi_A, A=1,2\}$ as a matrix using the doublet with oposite hypercharge ($Y=-1$)
+\begin{align}
+	\tilde{\phi}\equiv\epsilon_{AB}\phi^*= i \tau_{2,AB}\phi_B^*.
+\end{align}
+Combining $\phi$ and $\tilde{\phi}$ into a $2\otimes2$ matrix $\varphi$
+\begin{align}
+	\varphi\equiv \begin{pmatrix}
+		\tp_1 & \phi_1 \\
+		\tp_2 & \phi_2
+		\end{pmatrix}
+\end{align}
+For simulation this is helpful because the kinetic term in the action can be written as a multiplication of matrices, like for the gauge field. To rewrite the action in terms of $\varphi$ some useful identities that can be check
+\begin{align}
+	&U*=\tau_2 U \tau_2 \qquad \text{for} U\in\text{SU}2\\
+	&\widetilde{U\phi}=U\tilde{\phi}\\
+\end{align}
+With these the kinetic term can be rewritten
+\begin{align}
+	\text{Tr} {\varphi^\dagger U \varphi} = \tp^\dagger U\tp + \phi^\dagger U \phi = (\phi^\dagger U \phi)^* + \phi^\dagger U \phi = 2\text{Re}\phi^\dagger U \phi
+\end{align}
+For the interactions we write the matrix
+\begin{align}
+	\varphi^{\dagger f}  \varphi^g = (\varphi^{\dagger}  \varphi)^{fg}= \begin{pmatrix} \tp_1^{*f}\tp_1^g + \tp_2^{*f}\tp_2^g  & \tp_1^{*f}\phi_1^g + \tp_2^{*f}\phi_2^g \\
+			\phi_1^{*f}\tp_1^g + \phi_2^{*f}\tp_2^g  & \phi_1^{*f}\phi_1^g + \phi_2^{*f}\phi_2^g 
+		\end{pmatrix} =  \begin{pmatrix} \phi_2^f\phi_2^{*g} + \phi_1^f\phi_1^{*g} & \phi_2^f\phi_1^g + \phi_1^f\phi_2^g \\
+		\phi_1^{*f}\phi_2^{*g} + \phi_2^{*f}\phi_1^{*g} & \phi_1^{*f}\phi_1^g + \phi_2^{*f}\phi_2^g 
+		\end{pmatrix} 
+\end{align}
+Taking the trace we obtain the quadratic interaction
+\begin{align}
+	\text{Tr}\varphi^\dagger \varphi  = 2\Big(\phi_1^{*f}\phi_1^f + \phi_2^{*f}\phi_2^f\Big) = 2 \text{Tr}\phi^\dagger \phi
+\end{align}
+This can be used for the quartic interaction $\big(\text{Tr}\phi^\dagger \phi\big)^2$ straight away. To code we could use is
+\begin{align}
+	\text{Tr}\varphi^\dagger \varphi  = \text{re\_scal\_prod\_vecs}(\&(GC->higgs[r]), \&(GC->higgs[r]))
+\end{align}
+\note{is it computing all the action for all the Higgs, or just one?}. Now for the other interaction $\text{Tr}\big(\phi^\dagger \phi\big)^2=\text{Tr}\big((\phi^\dagger \phi)^{fg}(\phi^\dagger \phi)^{gh}\big)$ this is more involved. Written explicitly in components and in terms of $\phi$
+\begin{align}
+	\text{Tr}\big(\phi^\dagger \phi\big)^2=\Big((\phi^{*f}_{1}\phi^{g}_1+\phi^{*f}_2\phi^{g}_2)(\phi^{*g}_1\phi^{f}_1+\phi^{*g}_2\phi^{f}_2)\Big)
+\end{align}
+One option may be to use
+\begin{align}
+	\text{Tr}(\varphi^{\dagger}  \varphi)^{fg}_{11}(\varphi^{\dagger}  \varphi)^{gh}_{22}=(\varphi^{\dagger}  \varphi)^{fg}_{11}(\varphi^{\dagger}  \varphi)^{gf}_{22}=\Big((\phi^{*f}_{1}\phi^{g}_1+\phi^{*f}_2\phi^{g}_2)(\phi^{*g}_1\phi^{f}_1+\phi^{*g}_2\phi^{f}_2)\Big)
+	\label{eq:quartic_varphi}
+\end{align}
+Using the function already on the code I think the minimal change would be to code the following:
+
+\begin{align*}
+	&\text{double} \; \text{result}\\
+	&\text{Loop over f} \\
+	&SU_2 \; A \\
+	&\text{init\_}\text{su}2(A,v[f])\\
+	&\text{Loop over g} \\
+	&SU_2 \; B\\
+	&\text{init\_}\text{su}2(B,v[g])\\
+	&M=(\varphi^{\dagger}  \varphi)^{fg}_{11}=\text{A\_times\_dag1\_B\_}00\\
+	&M2=(\varphi^{\dagger}  \varphi)^{gf}_{22}=\text{B\_times\_dag1\_A\_}11\\	
+	&\text{result}+=M*M2\\
+\end{align*}
+The other option would be to just put it in terms of the initial field $\phi$ and code the multiplication, which would decrease the number of objects created.
+
+\begin{align}
+	(v[4f+2]-I v[4f+1])(v[4g+2]-I v[4g+1])+(v[4f+0]+I v[4f+3])(v[4g+0]-I v[4g+3]) \times \nonumber \\
+	\times (v[4g+2]-I v[4g+1])(v[4f+2]-I v[4f+1])+(v[4g+0]+I v[4g+3])(v[4f+0]-I v[4f+3]) \nonumber
+\end{align}
+%\begin{align}
+%	\sum_{fg}&\Big\{\big(v[4f]-iv[4f+3]\big)\;\big(v[4g]+v^\dagger[4f+1]v[4g+2]\big)\Big\}\\
+%	&\Big\{\big(v[4g]\;v^\dagger[4f]+v[4g+1]\;v^\dagger[4f+2]\Big\}
+%\end{align}
+
+\subsection{Introducing the quartic potential}
+The algorithm will consist of metropolis plus overrelaxation, with the particularity that an extra metropolis step needs to be performed for the overrelaxation step for $v\neq0$. According to \cite{Bonati:2021rzx} one can choose two random elements and rotate one to another with a phase $\alpha$.
+\begin{align}
+	&\phi_1' = \cos{\theta_1}e^{i\theta_2}\phi_1 + \sin{\theta_1}e^{i\theta_3}\phi_2\\
+	&\phi_2' = -\sin{\theta_1}e^{i\theta_2}\phi_1 + \cos{\theta_1}e^{i\theta_3}\phi_2
+\end{align}
+This is probably done to keep the normalization, \note{is it really random?}. For the overrelaxation step just propose the change
+\begin{align}
+	&\phi'_x=\frac{2\text{Re Tr}(\phi_x^\dagger S_x)}{S^\dagger_s S_x}S_x - \phi_x\\
+	&S_x=\sum_\mu (U_{x,\mu}\phi_{x+\mu}+U^\dagger_{x-\mu,\mu}\phi_{x-\mu})
+\end{align}
+where $S_x$ is usually referred as the staple for the Higgs if $v=0$ this is always accepted but if it is not, one needs to complement with an additional metropolis test.
+
+For the metropolis one needs to include the interaction when computing the energy. For the overrelaxation the metropolis test needs to be included with again the computation of the energy. The easiest way is to include it inside of the overrelaxation\_for\_higgs, with a condition on the parameter $\nu$.
+\section{Gauge correlations}
+I guess studying the two point function after some gauge fixing.
+
+\section{Fermions in 3D}
+An irreducible spinor in d-dimensions has $d_s=2^{[d/2]}$ components, where $[d/2]$ means the largest integer less or equal to $d/2$ \note{check this}. For $d=3$ means that the irreducible representation has $2$ components. The Clifford algebra in odd dimensions have two irreducible representations \note{which ones}. Regarding chiral symmetry, the generalization of $\gf$ to arbitrary dimensions is
+\begin{align}
+	\gs=-i^{[d/2]}\gamma^0...\gu{d-1}, \qquad \gs^2=\id.
+\end{align}
+In even dimension it anticommutes with all the $\gm$, but in odd dimensions it \textbf{commutes} with all the $\gm$ and it is $\id$ in one irreducible representation and $-\id$ in the other.
+
+To study chiral symmetry \cite{Pisarski:1984dj} and compare to $\epsilon$-expansion \cite{PhysRevD.33.3704}, it seems necessary to use a reducible $4x4$ representation with the usual $\gm$ matrices.
+
+\section{Questions}
+Just some thoughts and questions regarding the projects
+\begin{enumerate}
+	\item 
+\end{enumerate}
+\bibliographystyle{utphys_2}
+\bibliography{bilbiography}
+\end{thebibliography}
+
+\end{document}

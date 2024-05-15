@@ -1,0 +1,22 @@
+\providecommand{\href}[2]{#2}\begingroup\raggedright\begin{thebibliography}{1}
+
+\bibitem{Bonati:2021rzx}
+C.~Bonati, A.~Franchi, A.~Pelissetto, and E.~Vicari, ``{Phase diagram and Higgs
+  phases of three-dimensional lattice SU(Nc) gauge theories with multiparameter
+  scalar potentials},''
+  \href{https://dx.doi.org/10.1103/PhysRevE.104.064111}{{\em Phys. Rev. E}
+  {\bfseries 104} no.~6, (2021) 064111},
+  \href{https://arxiv.org/abs/2110.01657}{{\ttfamily arXiv:2110.01657
+  [cond-mat.stat-mech]}}.
+
+\bibitem{Pisarski:1984dj}
+R.~D. Pisarski, ``{Chiral Symmetry Breaking in Three-Dimensional
+  Electrodynamics},'' \href{https://dx.doi.org/10.1103/PhysRevD.29.2423}{{\em
+  Phys. Rev. D} {\bfseries 29} (1984) 2423}.
+
+\bibitem{PhysRevD.33.3704}
+T.~W. Appelquist, M.~Bowick, D.~Karabali, and L.~C.~R. Wijewardhana,
+  ``Spontaneous chiral-symmetry breaking in three-dimensional qed,''
+  \href{https://dx.doi.org/10.1103/PhysRevD.33.3704}{{\em Phys. Rev. D}
+  {\bfseries 33} (Jun, 1986) 3704--3713}.
+  \url{https://link.aps.org/doi/10.1103/PhysRevD.33.3704}.
